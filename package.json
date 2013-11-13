@@ -25,7 +25,7 @@
     "backbone"
   ],
   "author": "techwraith",
-  "style": "modal.css"
+  "style": "modal.css",
   "license": "MIT",
   "readmeFilename": "README.md",
   "gitHead": "9837e76559c1fb2d5aa226e3aee8dea799ddf879"
