@@ -1,6 +1,6 @@
 var Base = require('ribcage-view')
   , Button = require('ribcage-button')
-  , Menu = require('ribcage-menu')
+  , TopBar = require('ribcage-top-bar')
   , defer = require('lodash.defer')
   , bind = require('lodash.bind');
 
@@ -31,11 +31,11 @@ var Modal = Base.extend({
   }
 
 , clearButtons: function () {
-    this.menu.clearButtons();
+    this.topbar.setRightButton()
   }
 
 , addButton: function (opts) {
-    this.menu.addButton(opts);
+    this.topbar.setRightButton(opts)
   }
 
 , afterInit: function () {
@@ -43,60 +43,65 @@ var Modal = Base.extend({
   }
 
 , afterRender: function () {
-    var self = this;
+    var self = this
 
     if (this.view) {
 
       this.view.on('showBack', function () {
-        self.backButton.$el.show();
-        self.closeButton.$el.hide();
-      });
+        self.topbar.setLeftButton(self.backButton())
+      })
 
       this.view.on('hideBack', function () {
-        self.backButton.$el.hide();
-        self.closeButton.$el.show();
-      });
+        self.topbar.setLeftButton(self.closeButton())
+      })
 
       this.view.on('close', function () {
-        self.trigger('close');
-      });
+        self.trigger('close')
+      })
 
-      this.view.on('clearButtons', bind(this.clearButtons, this));
-      this.view.on('addButton',    bind(this.addButton, this));
+      this.view.on('clearButtons', _.bind(this.clearButtons, this))
+      this.view.on('addButton',    _.bind(this.addButton, this))
 
-      this.appendSubview(this.view, this.$('.main'));
+      this.appendSubview(this.view, this.$('.main'))
       // Wait for iiiiiiittttttt.
-      defer(function () {
-        self.view.render();
-        self.view.$el.css('height', '100%');
-        self.view.$('.pane-holder').css('height', '100%');
-      });
+      _.defer(function () {
+        self.view.render()
+        self.view.$el.css('height', '100%')
+        self.view.$('.pane-holder').css('height', '100%')
+      })
     }
 
-    this.menu = new Menu({className: 'pull-right'});
-    this.appendSubview(this.menu, this.$('.menu'));
-
-    this.closeButton = new ButtonBase({
-      label: 'Close'
-    , classStr: 'btn-primary btn-text closeBtn'
-    , action: function () {
-        self.trigger('close');
-      }
-    });
-    this.appendSubview(this.closeButton, this.$('.menu'));
-
-    this.backButton = new ButtonBase({
-      label: 'Back'
-    , classStr: 'btn-primary btn-text hidden backBtn'
-    , action: function () {
-        self.view.paneSwitcher.previous();
-        if (self.view.paneSwitcher.currentPane == 0) {
-          self.backButton.$('button').hide();
-          self.closeButton.$('button').show();
+    this.closeButton = function () {
+      return new Button({
+        label: self.options.closeLabel || ''
+      , icon: self.options.closeIcon || 'icon-remove'
+      , classStr: 'btn-primary btn-text closeBtn'
+      , action: function () {
+          self.trigger('close')
         }
-      }
-    });
-    this.appendSubview(this.backButton, this.$('.menu'));
+      })
+    }
+
+    this.backButton = function () {
+      return new Button({
+        label: self.options.backLabel || ''
+      , icon: self.options.backIcon || 'icon-chevron-left'
+      , classStr: 'btn-primary btn-text backBtn'
+      , action: function () {
+          self.view.paneSwitcher.previous();
+          if (self.view.paneSwitcher.currentPane == 0) {
+            self.view.trigger('hideBack')
+          }
+        }
+      })
+    }
+
+    this.topbar = new TopBar({
+      left: self.closeButton()
+    , title: self.view.title
+    })
+    this.appendSubview(this.topbar, this.$('.menu'))
+
   }
 
 });

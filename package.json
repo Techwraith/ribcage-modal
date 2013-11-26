@@ -1,13 +1,13 @@
 {
   "name": "ribcage-modal",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a modal for ribcage-ui",
   "main": "modal.js",
   "dependencies": {
     "lodash.bind": "~2.3.0",
     "lodash.defer": "~2.3.0",
     "ribcage-button": "~0.0.1",
-    "ribcage-menu": "~0.0.1",
+    "ribcage-top-bar": "~0.0.5",
     "ribcage-view": "~0.0.11"
   },
   "devDependencies": {},
